@@ -1,0 +1,128 @@
+services:
+
+  # ── BASE DE DATOS ─────────────────────────────────────────────
+  # Arranca primero, todo el resto depende de ella
+  base_datos:
+    container_name: logitrans-bd
+    build:
+      context: ./base_datos
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: roottoor*
+      MYSQL_DATABASE: logitrans_db
+      MYSQL_USER: logitrans_user
+      MYSQL_PASSWORD: LogiTrans25*
+    volumes:
+      - datos_bd:/var/lib/mysql
+    ports:
+      - "3306:3306"   # Solo desarrollo, cerrar en produccion
+    networks:
+      red_bd:
+        ipv4_address: 192.168.40.10
+    restart: unless-stopped
+
+  # ── SERVIDOR DE APLICACION PHP-FPM ───────────────────────────
+  # Procesa la logica PHP y centraliza las sesiones
+  aplicacion:
+    container_name: logitrans-php
+    build:
+      context: ./aplicacion
+      dockerfile: Dockerfile
+    depends_on:
+      - base_datos
+    volumes:
+      - ./servidor_web/www:/var/www/html
+      - sesiones_php:/var/lib/php/sessions
+    networks:
+      red_php:
+        ipv4_address: 192.168.30.20
+      red_bd:
+        ipv4_address: 192.168.40.20
+    restart: unless-stopped
+
+  # ── SERVIDOR WEB 1 ────────────────────────────────────────────
+  servidor_web1:
+    container_name: logitrans-web1
+    build:
+      context: ./servidor_web
+      dockerfile: Dockerfile
+    depends_on:
+      - aplicacion
+    volumes:
+      - ./servidor_web/www:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.20.10
+      red_php:
+        ipv4_address: 192.168.30.10
+    restart: unless-stopped
+
+  # ── SERVIDOR WEB 2 ────────────────────────────────────────────
+  servidor_web2:
+    container_name: logitrans-web2
+    build:
+      context: ./servidor_web
+      dockerfile: Dockerfile
+    depends_on:
+      - aplicacion
+    volumes:
+      - ./servidor_web/www:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.20.11
+      red_php:
+        ipv4_address: 192.168.30.11
+    restart: unless-stopped
+
+  # ── BALANCEADOR DE CARGA ──────────────────────────────────────
+  # Arranca ultimo, necesita que los servidores web esten listos
+  balanceador:
+    container_name: logitrans-balanceador
+    build:
+      context: ./balanceador
+      dockerfile: Dockerfile
+    depends_on:
+      - servidor_web1
+      - servidor_web2
+    ports:
+      - "80:80"       # Web publica
+      - "8080:8080"   # Panel de estadisticas HAProxy
+    networks:
+      red_dmz:
+        ipv4_address: 192.168.10.2
+      red_web:
+        ipv4_address: 192.168.20.2
+    restart: unless-stopped
+
+# ─────────────────────────────────────────────────────────────────
+volumes:
+  datos_bd:
+    driver: local
+  sesiones_php:
+    driver: local
+
+networks:
+  red_dmz:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+          gateway: 192.168.10.1
+  red_web:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.20.0/24
+          gateway: 192.168.20.1
+  red_php:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.30.0/24
+          gateway: 192.168.30.1
+  red_bd:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.40.0/24
+          gateway: 192.168.40.1

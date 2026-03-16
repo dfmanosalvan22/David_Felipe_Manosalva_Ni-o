@@ -1,0 +1,13 @@
+# Ficheros con contraseñas o datos sensibles
+.env
+*.env
+
+# Datos de la base de datos (el volumen Docker)
+base_datos/data/
+
+# Caché de PHP
+servidor_web/www/cache/
+
+# Ficheros del sistema
+.DS_Store
+Thumbs.db

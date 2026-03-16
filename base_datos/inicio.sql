@@ -1,0 +1,3 @@
+-- Aquí va el script SQL de inicialización de la base de datos
+-- Crea las tablas e inserta los datos iniciales
+-- Este fichero se ejecuta automáticamente al primer arranque del contenedor
