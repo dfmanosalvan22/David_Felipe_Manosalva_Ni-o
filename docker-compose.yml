@@ -23,10 +23,10 @@ services:
 
   # ── SERVIDOR DE APLICACION PHP-FPM ───────────────────────────
   # Procesa la logica PHP y centraliza las sesiones
-  aplicacion:
+  php:
     container_name: logitrans-php
     build:
-      context: ./aplicacion
+      context: ./php
       dockerfile: Dockerfile
     depends_on:
       - base_datos
@@ -47,7 +47,7 @@ services:
       context: ./servidor_web
       dockerfile: Dockerfile
     depends_on:
-      - aplicacion
+      - php
     volumes:
       - ./servidor_web/www:/var/www/html
     networks:
@@ -64,7 +64,7 @@ services:
       context: ./servidor_web
       dockerfile: Dockerfile
     depends_on:
-      - aplicacion
+      - php
     volumes:
       - ./servidor_web/www:/var/www/html
     networks:
