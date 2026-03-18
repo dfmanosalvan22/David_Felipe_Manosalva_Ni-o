@@ -1,42 +1,86 @@
-/* Contenedor del formulario */
+/* CONTENEDOR */
 .formulario {
-    text-align: center;
-    margin-top: 60px; /* más espacio arriba */
+    margin-top: 80px;
 }
 
-/* Caja del formulario (tipo card personalizada) */
-.formulario .form-box {
-    max-width: 400px;
-    margin: 0 auto; /* centrar */
-    padding: 25px;
-    border: 1px solid #ddd;
+/* CAJA FORMULARIO */
+.form-box {
+    border-radius: 15px; /* esquinas redondeadas */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover en la tarjeta */
+.form-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+}
+
+/* INPUTS */
+.form-control {
     border-radius: 10px;
-    background-color: #fff;
+    transition: all 0.3s ease;
+    cursor: text; /* cursor de escritura */
 }
 
-/* Inputs con pequeño ajuste */
-.formulario input {
-    margin-bottom: 15px;
+/* Cuando haces focus (clic) */
+.form-control:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 8px rgba(220,53,69,0.5);
 }
 
-/* Mensajes de error */
-.formulario .error {
-    display: none;
-    color: red;
-    font-size: 14px;
-    text-align: left;
+/* BOTÓN */
+.btn-animado {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer; /* mano */
 }
 
-/* Mostrar error si el input es inválido */
-.formulario input:invalid + .error {
-    display: block;
+/* Hover botón */
+.btn-animado:hover {
+    transform: scale(1.05);
+    background-color: #bb2d3b;
 }
 
-/* Bordes de validación */
-.formulario input:invalid {
+/* TEXTO ANIMADO */
+.titulo-animado {
+    animation: aparecer 1s ease-in-out;
+}
+
+/* ANIMACIÓN */
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* VALIDACIÓN */
+.form-control:invalid {
     border: 2px solid red;
 }
 
-.formulario input:valid {
+.form-control:valid {
     border: 2px solid green;
+}
+
+/* HERO */
+.hero {
+    background: linear-gradient(135deg, #1a1a2e, #dc3545);
+    min-height: 100vh;
+    padding: 60px 20px;
+}
+
+/* TARJETAS DE SERVICIOS */
+.servicio-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.servicio-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
 }
