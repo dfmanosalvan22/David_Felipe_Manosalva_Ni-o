@@ -1,0 +1,42 @@
+/* Contenedor del formulario */
+.formulario {
+    text-align: center;
+    margin-top: 60px; /* más espacio arriba */
+}
+
+/* Caja del formulario (tipo card personalizada) */
+.formulario .form-box {
+    max-width: 400px;
+    margin: 0 auto; /* centrar */
+    padding: 25px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+/* Inputs con pequeño ajuste */
+.formulario input {
+    margin-bottom: 15px;
+}
+
+/* Mensajes de error */
+.formulario .error {
+    display: none;
+    color: red;
+    font-size: 14px;
+    text-align: left;
+}
+
+/* Mostrar error si el input es inválido */
+.formulario input:invalid + .error {
+    display: block;
+}
+
+/* Bordes de validación */
+.formulario input:invalid {
+    border: 2px solid red;
+}
+
+.formulario input:valid {
+    border: 2px solid green;
+}

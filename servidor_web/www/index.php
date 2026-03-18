@@ -36,7 +36,7 @@ try {
     <meta charset="UTF-8">
     <title>LogiTrans S.A.</title>
 </head>
-<body>
+<body class="bg-light">
     <h1>LogiTrans S.A.</h1>
     <p>Bienvenido al sistema web de LogiTrans.</p>
 

@@ -35,45 +35,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Registro - LogiTrans</title>
-<style>
-    .formulario{
-        text-align: center;
-        margin-top: 50px;
-    }
-</style>
+
 </head>
-<body>
+<body class="bg-light">
     <?php include("header.php");?>
 
-    <div class="formulario">    
-        <h1>LogiTrans S.A.</h1>
-        <h2>Crear cuenta</h2>
+    <div class="container mt-5 d-flex justify-content-center formulario">
+        <div class="card p-4 bg-white" style="width: 600px;">
+            <h2 class="fw-bold fs-2">Crear cuenta</h2>
 
-        <?php if ($error): ?>
-            <p style="color:red"><?php echo $error; ?></p>
-        <?php endif; ?>
+            <?php if ($error): ?>
+                <p style="color:red"><?php echo $error; ?></p>
+            <?php endif; ?>
 
-        <?php if ($exito): ?>
-            <p style="color:green"><?php echo $exito; ?></p>
-            <a href="login.php">Ir al login</a>
-        <?php else: ?>
-            <form method="POST" action="registro.php">
-                <label>Nombre:</label><br>
-                <input type="text" name="nombre" required><br><br>
+            <?php if ($exito): ?>
+                <p style="color:green"><?php echo $exito; ?></p>
+                <a href="login.php">Ir al login</a>
+            <?php else: ?>
+                <form method="POST" action="registro.php">
+                    <label class="form-label">Nombre:</label><br>
+                    <input type="text" name="nombre" required class="form-control"><br><br>
+                    
+                    <label 
+                    class="form-label">Dirección:</label><br>
+                    <input type="text" name="telefono" class="form-control"><br><br>
 
-                <label>Email:</label><br>
-                <input type="email" name="email" required><br><br>
+                    <label class="form-label">Email:</label><br>
+                    <input type="email" name="email" required class="form-control"><br><br>
 
-                <label>Telefono:</label><br>
-                <input type="text" name="telefono"><br><br>
+                    <label class="form-label">Telefono:</label><br>
+                    <input type="text" name="telefono" class="form-control"><br><br>
 
-                <label>Contraseña:</label><br>
-                <input type="password" name="password" required><br><br>
+                    <label class="form-label">Contraseña:</label><br>
+                    <input type="password" name="password" required class="form-control"><br><br>
 
-                <button type="submit">Registrarse</button>
-            </form>
-            <p>¿Ya tienes cuenta? <a href="login.php">Inicia sesion</a></p>
-        <?php endif; ?>
+                    <button type="submit" class="form-control bg-danger text-white">Registrarse</button>
+                </form>
+                <p>¿Ya tienes cuenta? <a href="login.php">Inicia sesion</a></p>
+            <?php endif; ?>
+        </div>
     </div>
+
 </body>
 </html>

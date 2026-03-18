@@ -6,6 +6,7 @@
     <title>Header</title>
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
 
@@ -21,8 +22,8 @@
     </a>
 
     <!-- Logo centrado -->
-    <a href="index.php" class="text-white text-decoration-none fw-bold fs-4 mx-auto">
-      LogiTrans
+    <a href="index.php" class="text-white text-decoration-none fw-bold fst-italic fs-1 mx-auto">
+      LogiTrans S.A.
     </a>
 
     <!-- Botones a la derecha -->
