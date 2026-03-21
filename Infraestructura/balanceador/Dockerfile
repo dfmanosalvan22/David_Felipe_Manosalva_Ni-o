@@ -1,5 +1,4 @@
 # Imagen base oficial de HAProxy basada en Debian
-# Debian en lugar de Alpine porque tiene bash instalado
 FROM haproxy:2.9
 
 # Copiar nuestra configuracion personalizada
