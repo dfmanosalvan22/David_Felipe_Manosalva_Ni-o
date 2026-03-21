@@ -1,6 +1,5 @@
--- Crea las tablas e inserta los datos iniciales, este fichero se ejecuta automáticamente al primer arranque del contenedor
+-- Se crea las tablas e inserta los datos iniciales, este fichero se ejecuta automáticamente al primer arranque del contenedor
 
- 
 -- Base de datos LogiTrans S.A.
 
 USE logitrans_db;
@@ -106,11 +105,9 @@ CREATE TABLE IF NOT EXISTS DETALLE_ENVIO (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- ─────────────────────────────────────────────────────────────
 -- DATOS INICIALES
--- ─────────────────────────────────────────────────────────────
 
--- DEPARTAMENTOS (mismo orden que el AD)
+-- DEPARTAMENTOS 
 INSERT INTO DEPARTAMENTOS (NOMBRE_DEPT) VALUES
 ('Comercial'),
 ('Marketing'),
@@ -152,7 +149,6 @@ INSERT INTO PUESTOS_TRABAJO (NOMBRE_PUESTO, ID_DEPT) VALUES
 ('Tesorero', 8);                 -- 23
 
 -- EQUIPOS
--- Se elimina ID_EQUIPO del INSERT porque es AUTO_INCREMENT
 INSERT INTO EQUIPOS (TIPO_EQUIPO, MARCA_EQUIPO, MODELO_EQUIPO) VALUES
 ('Portatil', 'Dell',    'Latitude 5520'),
 ('Portatil', 'HP',      'EliteBook 840'),
@@ -175,11 +171,8 @@ INSERT INTO VEHICULOS (MATRICULA_VEHI, MARCA_VEHI, MODELO_VEHI, CAPACIDAD_VEHI, 
 
 -- ─────────────────────────────────────────────────────────────
 -- EMPLEADOS — extraidos del Active Directory
--- Emails basados en SamAccountName@logitrans.local
--- DNIs ficticios — reemplaza por los reales si los tienes
+-- DNIs ficticios
 -- ID_PUESTO asignado por defecto segun departamento
--- Ajusta el ID_PUESTO de cada uno segun su cargo real
--- ─────────────────────────────────────────────────────────────
 
 INSERT INTO EMPLEADOS (DNI_EMP, NOMBRE_EMP, APELLIDOS_EMP, FECHA_ALTA, TELEFONO_EMP, EMAIL_EMP, ID_PUESTO) VALUES
 
