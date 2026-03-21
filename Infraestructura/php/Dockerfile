@@ -1,5 +1,4 @@
 # PHP-FPM: PHP como proceso independiente
-# No tiene Apache, solo procesa el codigo PHP que Apache le manda
 FROM php:8.2-fpm
 
 # Instalar extensiones para conectar con MariaDB
