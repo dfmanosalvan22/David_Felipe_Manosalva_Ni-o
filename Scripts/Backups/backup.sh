@@ -7,7 +7,7 @@ fi
 
 TIPO=$1
 CONTENEDOR="logitrans-bd"
-VOLUMEN="bd_datos"
+VOLUMEN="datos_bd"
 BACKUP_DIR="/home/ubuntu_server_docker/backups"
 FECHA=$(date +%Y%m%d_%H%M%S)
 
