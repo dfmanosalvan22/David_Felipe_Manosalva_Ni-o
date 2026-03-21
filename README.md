@@ -1,54 +1,67 @@
-# LogiTrans S.A. — Infraestructura Web
+# LogiTrans S.A. — Proyecto Intermodular ASIR II
 
-## Arquitectura
+## Descripción del proyecto
 
+Diseño, implementación y documentación de la infraestructura tecnológica completa de la empresa ficticia **LogiTrans S.A.**, una empresa de logística y transporte con sede en Mérida. El proyecto abarca la red corporativa interna, los servicios de red, la administración de servidores, una plataforma web pública accesible desde internet, seguridad perimetral, base de datos, backups automatizados y herramientas de administración.
+
+---
+
+## Tecnologías utilizadas
+
+| Componente | Tecnología |
+|---|---|
+| Red corporativa | VirtualBox, Ubuntu Server 22.04, Windows Server 2022 |
+| Balanceador de carga | HAProxy 2.9 |
+| Servidores web | Apache 2.4 |
+| Servidor de aplicación | PHP-FPM 8.2 |
+| Base de datos | MariaDB 11.2 |
+| Orquestación | Docker y Docker Compose |
+| Servicios corporativos | DNS, DHCP, FTP con SSL (Windows Server 2022) |
+| Directorio activo | Active Directory — dominio logitrans.local |
+| Backups | Script Bash + interfaz Python/Tkinter vía SSH |
+| Gestión de incidencias | Python con detección de roles por Active Directory |
+| Frontend web | Bootstrap 5 |
+
+---
+
+## Arquitectura de red
+
+La infraestructura implementa una arquitectura en cascada con seis segmentos de red:
 ```
-red_dmz (192.168.10.0/24)
-    Balanceador HAProxy — IF1 entrada
-
-red_web (192.168.20.0/24)
-    Balanceador HAProxy — IF2 salida
-    Servidor Web 1 (Apache) — IF1 entrada
-    Servidor Web 2 (Apache) — IF1 entrada
-
-red_php (192.168.30.0/24)
-    Servidor Web 1 (Apache) — IF2 salida
-    Servidor Web 2 (Apache) — IF2 salida
-    Servidor PHP-FPM — IF1 entrada
-
-red_bd (192.168.40.0/24)
-    Servidor PHP-FPM — IF2 salida
-    Base de Datos MariaDB
+Internet → Router → DMZ (Docker Host) → red_dmz → red_web → red_php → red_bd
 ```
 
-## Estructura de carpetas
+| Segmento | Subred | Descripción |
+|---|---|---|
+| LAN corporativa | 192.168.1.0/24 | Empleados, Windows Server y router |
+| DMZ | 192.168.50.0/24 | Docker host, único servidor expuesto |
+| red_dmz | 192.168.10.0/24 | HAProxy — entrada de tráfico público |
+| red_web | 192.168.20.0/24 | HAProxy → Apache x2 |
+| red_php | 192.168.30.0/24 | Apache x2 → PHP-FPM |
+| red_bd | 192.168.40.0/24 | PHP-FPM → MariaDB |
 
+---
+
+## Arrancar la infraestructura web
+```bash
+cd Infraestructura
+docker-compose up -d --build
 ```
-logitrans/
-├── docker-compose.yml
-├── balanceador/
-│   ├── Dockerfile
-│   └── haproxy.cfg
-├── servidor_web/
-│   ├── Dockerfile
-│   ├── httpd-vhost.conf
-│   └── www/
-│       ├── index.php
-│       └── config/
-│           └── bd.php
-├── aplicacion/
-│   └── Dockerfile
-└── base_datos/
-    ├── Dockerfile
-    └── inicio.sql
+
+## Parar
+```bash
+docker-compose down
 ```
+
+## Acceso
+
+- **Aplicación web:** http://localhost
+- **Panel HAProxy:** http://localhost:8080/stats
+  - Usuario: `admin`
+  - Contraseña: `logitrans2024`
 
 ## Comandos útiles
-
 ```bash
-# Arrancar todo
-docker-compose up -d
-
 # Ver estado de los contenedores
 docker-compose ps
 
@@ -58,16 +71,32 @@ docker logs logitrans-web1
 docker logs logitrans-php
 docker logs logitrans-bd
 
-# Parar todo (conserva los datos)
-docker-compose down
+# Entrar a la base de datos
+docker exec -it logitrans-bd mariadb -u logitrans_user -p
 
-# Parar todo y borrar los volúmenes (borra los datos)
-docker-compose down -v
-
-# Reconstruir tras cambios en Dockerfiles
+# Reconstruir tras cambios
 docker-compose up -d --build
 
-# Entrar a un contenedor
-docker exec -it logitrans-bd mariadb -u logitrans_user -p
+# Borrar todo incluyendo volúmenes (borra los datos)
+docker-compose down -v
 ```
 
+---
+
+## Servicios web disponibles
+
+La plataforma web pública permite a los clientes de LogiTrans:
+
+- Registrarse y autenticarse
+- Solicitar los cuatro servicios de la empresa:
+  - Transporte de mercancías
+  - Almacenamiento en bodega
+  - Transporte urgente
+  - Logística integral
+- Consultar el estado de sus solicitudes
+
+---
+
+## Documentación
+
+La documentación técnica completa del proyecto está disponible en la carpeta `/documentacion`.
