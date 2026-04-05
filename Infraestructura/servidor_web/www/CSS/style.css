@@ -84,3 +84,106 @@
     transform: translateY(-8px);
     box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
 }
+
+/* --------------------- */
+/* ESTILOS PARA EL PANEL DE EMPLEADOS */
+/* --------------------- */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    width: 260px;
+    height: 100vh;
+    background-color: #1a1a2e;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    z-index: 1050;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+}
+
+.sidebar.abierto {
+    left: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 15px;
+    background-color: #dc3545;
+    font-size: 18px;
+    color: white;
+}
+
+.btn-cerrar {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.sidebar-empleado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    color: #aaaaaa;
+}
+
+.sidebar-divider {
+    border-color: #333;
+    margin: 5px 15px;
+}
+
+.sidebar-titulo {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #666;
+    padding: 10px 15px 5px;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    color: #cccccc;
+    text-decoration: none;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+
+.sidebar-link:hover {
+    background-color: #2a2a3e;
+    color: white;
+}
+
+.sidebar-link.activo {
+    background-color: #dc3545;
+    color: white;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 1049;
+}
+
+.sidebar-overlay.visible {
+    display: block;
+}
+
+.contenido-principal {
+    transition: margin-left 0.3s ease;
+    padding: 20px;
+}

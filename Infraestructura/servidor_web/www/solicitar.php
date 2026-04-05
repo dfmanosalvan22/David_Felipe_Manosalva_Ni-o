@@ -33,19 +33,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $destino        = trim($_POST['destino']);
     $observaciones  = trim($_POST['observaciones']);
 
+    // Peso y volumen son opcionales pero si se ponen deben ser numeros
+    // Si el campo viene vacio lo guardamos como NULL en la BD
+    $peso   = !empty($_POST['peso_kg'])    ? $_POST['peso_kg']    : null;
+    $volumen = !empty($_POST['volumen_m3']) ? $_POST['volumen_m3'] : null;
+
     if (empty($tipo_mercancia)) {
         $error = "El tipo de mercancia es obligatorio.";
     } else {
         $pdo  = conectar();
         $stmt = $pdo->prepare(
-            "INSERT INTO SOLICITUDES (ID_CLIENTE, TIPO_SERVICIO, TIPO_MERCANCIA, DESCRIPCION, ORIGEN, DESTINO, OBSERVACIONES)
-             VALUES (?, ?, ?, ?, ?, ?, ?)"
+            "INSERT INTO SOLICITUDES (
+                ID_CLIENTE, TIPO_SERVICIO, TIPO_MERCANCIA,
+                DESCRIPCION, PESO_KG, VOLUMEN_M3,
+                ORIGEN, DESTINO, OBSERVACIONES
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
         $stmt->execute([
             $_SESSION['id_cliente'],
             strtoupper($servicio),
             $tipo_mercancia,
             $descripcion,
+            $peso,
+            $volumen,
             $origen,
             $destino,
             $observaciones,
@@ -89,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <form method="POST">
 
                         <div class="mb-3">
-                            <label class="form-label">Tipo de mercancia</label>
+                            <label class="form-label">Tipo de mercancia <span class="text-danger">*</span></label>
                             <select name="tipo_mercancia" required class="form-select">
                                 <option value="">Selecciona una opcion</option>
                                 <option value="General">Mercancia general</option>
@@ -102,9 +112,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <div class="mb-3">
                             <label class="form-label">Descripcion</label>
-                            <textarea name="descripcion" class="form-control" rows="3"
+                            <textarea name="descripcion" class="form-control" rows="2"
                                 placeholder="Describe que necesitas"></textarea>
                         </div>
+
+                        <!-- Peso siempre visible -->
+                        <div class="mb-3">
+                            <label class="form-label">Peso aproximado (kg)</label>
+                            <input type="number" name="peso_kg" class="form-control"
+                                   min="1" step="0.01" placeholder="Ej: 500">
+                        </div>
+
+                        <!-- Volumen solo para almacenamiento e integral -->
+                        <?php if (in_array($servicio, ['almacenamiento', 'integral'])): ?>
+                        <div class="mb-3">
+                            <label class="form-label">Volumen aproximado (m3)</label>
+                            <input type="number" name="volumen_m3" class="form-control"
+                                   min="0.1" step="0.001" placeholder="Ej: 2.5">
+                        </div>
+                        <?php endif; ?>
 
                         <div class="mb-3">
                             <label class="form-label">Origen</label>
