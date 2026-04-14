@@ -19,8 +19,8 @@ require_once 'config/bd.php';
 <!-- ── HERO ──────────────────────────────────────────────────── -->
 <section class="hero d-flex align-items-center justify-content-center text-white text-center">
     <div>
-        <h1 class="display-4 fw-bold">Movemos lo que importa</h1>
-        <p class="fs-5 mt-3">Soluciones de Logística y Transporte en Extremadura y toda España</p>
+        <h1 class="display-4 fw-bold">Tú Logística, sin Complicaciones</h1>
+        <p class="fs-5 mt-3">Transporte y Gestión de mercancías adaptados a empresas y particulares en toda España</p>
         <div class="mt-4 d-flex gap-3 justify-content-center">
             <a href="#servicios" class="btn btn-danger btn-lg">Ver servicios</a>
             <a href="registro.php" class="btn btn-outline-light btn-lg">Crear cuenta</a>
@@ -35,9 +35,7 @@ require_once 'config/bd.php';
         <div class="text-center mb-5">
             <h2 class="fw-bold">Sobre LogiTrans S.A.</h2>
             <p class="text-muted fs-5 mt-2">
-                Empresa de logística y transporte con sede en Mérida, Extremadura.
-                Llevamos años conectando empresas y particulares con soluciones
-                de transporte fiables, seguras y a medida.
+                Somos una empresa de logística ubicada en Mérida especializada en el transporte y almacenamiento de mercancías. Trabajamos con empresas y particulares ofreciendo soluciones prácticas, seguras y adaptadas a cada necesidad.
             </p>
         </div>
 
@@ -48,9 +46,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-bullseye fs-1 text-danger mb-3"></i>
                     <h4 class="fw-bold">Misión</h4>
                     <p class="text-muted">
-                        Ofrecer soluciones logísticas eficientes y personalizadas,
-                        garantizando la entrega segura y puntual de cada mercancía,
-                        con un servicio cercano y profesional.
+                        Facilitar el transporte y almacenamiento de mercancías de forma eficiente, asegurando entregas puntuales y un servicio claro para el cliente.
                     </p>
                 </div>
             </div>
@@ -60,9 +56,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-eye fs-1 text-danger mb-3"></i>
                     <h4 class="fw-bold">Visión</h4>
                     <p class="text-muted">
-                        Convertirnos en la empresa de referencia en logística
-                        y transporte de la región, expandiendo nuestra flota
-                        y capacidad para atender a clientes a nivel nacional.
+                        Seguir creciendo como empresa logística a nivel nacional, mejorando nuestra flota y ampliando los servicios ofrecidos.
                     </p>
                 </div>
             </div>
@@ -72,9 +66,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-stars fs-1 text-danger mb-3"></i>
                     <h4 class="fw-bold">Valores</h4>
                     <p class="text-muted">
-                        Compromiso, puntualidad, transparencia y seguridad.
-                        Cada envío es tratado con la misma dedicación,
-                        independientemente de su tamaño o destino.
+                        Responsabilidad, puntualidad y transparencia en cada envío, ofreciendo un servicio fiable en todo momento.
                     </p>
                 </div>
             </div>
@@ -99,8 +91,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-truck fs-1 text-danger mb-3"></i>
                     <h5 class="fw-bold">Transporte de mercancías</h5>
                     <p class="text-muted small">
-                        Traslado de mercancías entre cualquier punto de España.
-                        Flota propia con capacidad de hasta 20.000 kg.
+                        Transporte de mercancías a nivel nacional con vehículos adaptados a distintos volúmenes de carga.
                     </p>
                     <a href="<?php echo isset($_SESSION['usuario']) ? 'solicitar.php?servicio=transporte' : 'login.php?redir=transporte'; ?>"
                        class="btn btn-danger mt-auto">
@@ -114,8 +105,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-building fs-1 text-danger mb-3"></i>
                     <h5 class="fw-bold">Almacenamiento en bodega</h5>
                     <p class="text-muted small">
-                        Nave propia en Mérida para el almacenamiento
-                        temporal o prolongado de tu mercancía con total seguridad.
+                        Espacio de almacenamiento en nuestras instalaciones, con control y gestión de mercancía.    
                     </p>
                     <a href="<?php echo isset($_SESSION['usuario']) ? 'solicitar.php?servicio=almacenamiento' : 'login.php?redir=almacenamiento'; ?>"
                        class="btn btn-danger mt-auto">
@@ -129,8 +119,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-lightning-charge fs-1 text-danger mb-3"></i>
                     <h5 class="fw-bold">Transporte urgente</h5>
                     <p class="text-muted small">
-                        Entrega prioritaria en el menor tiempo posible.
-                        Ideal para envíos de última hora o mercancía sensible.
+                        Servicio prioritario para entregas rápidas cuando el tiempo es un factor clave.
                     </p>
                     <a href="<?php echo isset($_SESSION['usuario']) ? 'solicitar.php?servicio=urgente' : 'login.php?redir=urgente'; ?>"
                        class="btn btn-danger mt-auto">
@@ -144,8 +133,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-boxes fs-1 text-danger mb-3"></i>
                     <h5 class="fw-bold">Logística integral</h5>
                     <p class="text-muted small">
-                        Combinamos almacenamiento y transporte en un único servicio.
-                        Tu mercancía llega a bodega y se distribuye cuando lo necesitas.
+                        Gestión completa desde la recogida hasta la entrega final, combinando transporte y almacenamiento.    
                     </p>
                     <a href="<?php echo isset($_SESSION['usuario']) ? 'solicitar.php?servicio=integral' : 'login.php?redir=integral'; ?>"
                        class="btn btn-danger mt-auto">
@@ -172,8 +160,7 @@ require_once 'config/bd.php';
                 <i class="bi bi-truck-front fs-1 text-danger"></i>
                 <h5 class="fw-bold mt-2">Flota propia</h5>
                 <p class="text-muted small">
-                    8 vehículos propios de distintas capacidades
-                    para adaptarnos a cualquier envío.
+                    Vehículos propios que permiten adaptarnos a distintos tipos de carga.
                 </p>
             </div>
 
@@ -190,8 +177,7 @@ require_once 'config/bd.php';
                 <i class="bi bi-shield-check fs-1 text-danger"></i>
                 <h5 class="fw-bold mt-2">Seguridad garantizada</h5>
                 <p class="text-muted small">
-                    Toda la mercancía está controlada
-                    y asegurada durante el transporte.
+                    Control del estado de la mercancía durante todo el proceso.
                 </p>
             </div>
 
@@ -200,10 +186,61 @@ require_once 'config/bd.php';
                 <h5 class="fw-bold mt-2">Seguimiento online</h5>
                 <p class="text-muted small">
                     Consulta el estado de tus envíos
-                    en tiempo real desde tu perfil.
+                    desde tu perfil.
                 </p>
             </div>
 
+        </div>
+    </div>
+</section>
+
+<!-- Sección flota — conecta a la BD y muestra los vehículos -->
+<section class="py-5 bg-white" id="flota">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Nuestra flota</h2>
+            <p class="text-muted">Vehículos operativos preparados para distintos tipos de transporte
+            </p>
+        </div>
+        <div class="row g-4">
+            <?php
+            $pdo  = conectar();
+            $stmt = $pdo->query(
+                "SELECT MATRICULA_VEHI, MARCA_VEHI, MODELO_VEHI,
+                        CAPACIDAD_VEHI, ESTADO_MANTENIMIENTO_VEHI
+                 FROM VEHICULOS
+                 WHERE ESTADO_MANTENIMIENTO_VEHI = 'Operativo'"
+            );
+            $vehiculos = $stmt->fetchAll();
+            foreach ($vehiculos as $v):
+            ?>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 shadow-sm text-center p-3">
+                    <?php
+                    $imagen = "Imagenes/" . $v['MATRICULA_VEHI'] . ".jpg";
+
+                    if (!file_exists($imagen)) {
+                        $imagen = "Imagenes/default.jpg";
+                    }
+                    ?>
+                    <img src="<?php echo $imagen; ?>" 
+                    class="img-fluid mb-2"
+                    style="height:120px; object-fit:cover;">
+
+                    <h6 class="fw-bold">
+                        <?php echo htmlspecialchars($v['MARCA_VEHI']); ?>
+                        <?php echo htmlspecialchars($v['MODELO_VEHI']); ?>
+                    </h6>
+                    <p class="text-muted small mb-1">
+                        Matricula: <?php echo htmlspecialchars($v['MATRICULA_VEHI']); ?>
+                    </p>
+                    <p class="text-muted small mb-0">
+                        Capacidad: <?php echo $v['CAPACIDAD_VEHI']; ?> kg
+                    </p>
+                    <span class="badge bg-success mt-2">Operativo</span>
+                </div>
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
@@ -214,7 +251,8 @@ require_once 'config/bd.php';
 
         <div class="text-center mb-4">
             <h2 class="fw-bold">Contacto</h2>
-            <p class="text-white-50">¿Tienes alguna pregunta? Estamos aquí para ayudarte.</p>
+            <p class="text-white-50">Puedes ponerte en contacto con nosotros para cualquier consulta o solicitud de servicio.
+            </p>
         </div>
 
         <div class="row justify-content-center g-4 text-center">
@@ -253,6 +291,5 @@ require_once 'config/bd.php';
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

@@ -19,6 +19,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <!-- Menú derecha -->
     <div class="d-flex gap-2 align-items-center">
+      <a href="index.php#nosotros" class="text-white text-decoration-none">Nosotros</a>
+      <a href="index.php#servicios" class="text-white text-decoration-none">Servicios</a>
+      <a href="index.php#flota" class="text-white text-decoration-none">Flota</a>
+      <a href="index.php#contacto" class="text-white text-decoration-none">Contacto</a>
+
       <?php if (isset($_SESSION['usuario'])): ?>
         <span class="text-white me-2">
           Hola, <?php echo htmlspecialchars($_SESSION['usuario']); ?>
@@ -26,7 +31,7 @@ if (session_status() === PHP_SESSION_NONE) {
         <a href="dashboard.php" class="btn btn-outline-light btn-sm">Mi panel</a>
         <a href="logout.php" class="btn btn-warning btn-sm">Cerrar sesión</a>
       <?php else: ?>
-        <a href="registro.php" class="btn btn-outline-light btn-sm">Registrarse</a>
+        <a href="registro.php" class="btn btn-danger btn-sm">Registrarse</a>
         <a href="login.php" class="btn btn-danger btn-sm">Iniciar sesión</a>
       <?php endif; ?>
     </div>
