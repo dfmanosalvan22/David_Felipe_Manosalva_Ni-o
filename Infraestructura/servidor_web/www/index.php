@@ -1,41 +1,127 @@
 <?php
 session_start();
 require_once 'config/bd.php';
+
+// Sacar los vehiculos operativos de la BD para la seccion de flota
+try {
+    $pdo = conectar();
+    $vehiculos = $pdo->query(
+        "SELECT MATRICULA_VEHI, MARCA_VEHI, MODELO_VEHI, CAPACIDAD_VEHI, ESTADO_MANTENIMIENTO_VEHI
+         FROM VEHICULOS
+         ORDER BY CAPACIDAD_VEHI DESC"
+    )->fetchAll();
+} catch (Exception $e) {
+    $vehiculos = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiTrans S.A.</title>
+    <title>LogiTrans S.A. — Transporte y Logística</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
 
-<?php include("header.php"); ?>
+<!-- ── NAVBAR ─────────────────────────────────────────────────── -->
+<nav class="navbar navbar-expand-lg navbar-logitrans">
+    <div class="container">
+
+        <a class="navbar-brand" href="index.php">
+            <img src="Imagenes/logo_sinfond.png" alt="LogiTrans S.A." height="35" class="d-inline-block align-text-top me-2">LogiTrans
+        </a>
+
+        <button class="navbar-toggler border-secondary" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon" style="filter: invert(1)"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav mx-auto gap-1">
+                <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
+                <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+                <li class="nav-item"><a class="nav-link" href="#flota">Flota</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+            </ul>
+
+            <div class="d-flex gap-2 align-items-center">
+                <?php if (isset($_SESSION['usuario'])): ?>
+                    <a href="dashboard.php" class="btn-nav-login text-decoration-none">
+                        <i class="bi bi-person-circle me-1"></i><?php echo htmlspecialchars($_SESSION['usuario']); ?>
+                    </a>
+                    <a href="logout.php" class="btn-nav-login text-decoration-none">Salir</a>
+                <?php else: ?>
+                    <a href="login.php" class="btn-nav-login text-decoration-none">Iniciar sesión</a>
+                    <a href="registro.php" class="btn-nav-register text-decoration-none">Registrarse</a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+    </div>
+</nav>
 
 <!-- ── HERO ──────────────────────────────────────────────────── -->
-<section class="hero d-flex align-items-center justify-content-center text-white text-center">
+<section class="hero text-white">
     <div>
-        <h1 class="display-4 fw-bold">Tú Logística, sin Complicaciones</h1>
-        <p class="fs-5 mt-3">Transporte y Gestión de mercancías adaptados a empresas y particulares en toda España</p>
-        <div class="mt-4 d-flex gap-3 justify-content-center">
-            <a href="#servicios" class="btn btn-danger btn-lg">Ver servicios</a>
-            <a href="registro.php" class="btn btn-outline-light btn-lg">Crear cuenta</a>
+        <h1 class="fw-bold titulo-animado">Tu Logística, sin complicaciones</h1>
+        <p class="mt-3">
+            Transporte y Gestión de mercancías adaptados a empresas y particulares en toda España
+        </p>
+        <div class="mt-4 d-flex gap-3 justify-content-center flex-wrap">
+            <a href="#servicios" class="btn btn-danger btn-lg px-4">Ver servicios</a>
+            <?php if (!isset($_SESSION['usuario'])): ?>
+                <a href="registro.php" class="btn btn-outline-light btn-lg px-4">Crear cuenta</a>
+            <?php else: ?>
+                <a href="dashboard.php" class="btn btn-outline-light btn-lg px-4">Mi panel</a>
+            <?php endif; ?>
         </div>
     </div>
 </section>
+
+<!-- ── BARRA DE ESTADÍSTICAS ─────────────────────────────────── -->
+<div class="stats-bar">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">+50</div>
+                    <div class="stat-label">Empleados</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">8</div>
+                    <div class="stat-label">Vehículos propios</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">4</div>
+                    <div class="stat-label">Servicios disponibles</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">Nacional</div>
+                    <div class="stat-label">Cobertura en España</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- ── SOBRE NOSOTROS ─────────────────────────────────────────── -->
 <section class="py-5 bg-light" id="nosotros">
     <div class="container">
 
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Sobre LogiTrans S.A.</h2>
-            <p class="text-muted fs-5 mt-2">
-                Somos una empresa de logística ubicada en Mérida especializada en el transporte y almacenamiento de mercancías. Trabajamos con empresas y particulares ofreciendo soluciones prácticas, seguras y adaptadas a cada necesidad.
+        <div class="seccion-titulo">
+            <h2>Sobre LogiTrans S.A.</h2>
+            <div class="linea"></div>
+            <p class="mt-3">
+                Somos una empresa de logística ubicada en Mérida especializada en el transporte y almacenamiento de mercancías. Trabajamos con empresas y particulares ofreciendo soluciones prácticas, seguras y adaptadas a cada necesidad
             </p>
         </div>
 
@@ -46,7 +132,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-bullseye fs-1 text-danger mb-3"></i>
                     <h4 class="fw-bold">Misión</h4>
                     <p class="text-muted">
-                        Facilitar el transporte y almacenamiento de mercancías de forma eficiente, asegurando entregas puntuales y un servicio claro para el cliente.
+                        Facilitar el transporte y almacenamiento de mercancías de forma eficiente,  asegurando entregas puntuales y un servicio claro para el cliente
                     </p>
                 </div>
             </div>
@@ -56,7 +142,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-eye fs-1 text-danger mb-3"></i>
                     <h4 class="fw-bold">Visión</h4>
                     <p class="text-muted">
-                        Seguir creciendo como empresa logística a nivel nacional, mejorando nuestra flota y ampliando los servicios ofrecidos.
+                        Seguir creciendo como empresa logística a nivel nacional, mejorando nuestra flota y ampliando los servicios ofrecidos
                     </p>
                 </div>
             </div>
@@ -66,7 +152,7 @@ require_once 'config/bd.php';
                     <i class="bi bi-stars fs-1 text-danger mb-3"></i>
                     <h4 class="fw-bold">Valores</h4>
                     <p class="text-muted">
-                        Responsabilidad, puntualidad y transparencia en cada envío, ofreciendo un servicio fiable en todo momento.
+                        Responsabilidad, puntualidad y transparencia en cada envío, ofreciendo un servicio fiable en todo momento
                     </p>
                 </div>
             </div>
@@ -76,12 +162,13 @@ require_once 'config/bd.php';
 </section>
 
 <!-- ── SERVICIOS ─────────────────────────────────────────────── -->
-<section class="py-5 bg-light" id="servicios">
+<section class="py-5 bg-white" id="servicios">
     <div class="container">
 
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Nuestros servicios</h2>
-            <p class="text-muted">Selecciona el servicio que necesitas para continuar</p>
+        <div class="seccion-titulo">
+            <h2>Nuestros servicios</h2>
+            <div class="linea"></div>
+            <p class="mt-3">Selecciona el servicio que necesitas</p>
         </div>
 
         <div class="row g-4">
@@ -91,12 +178,10 @@ require_once 'config/bd.php';
                     <i class="bi bi-truck fs-1 text-danger mb-3"></i>
                     <h5 class="fw-bold">Transporte de mercancías</h5>
                     <p class="text-muted small">
-                        Transporte de mercancías a nivel nacional con vehículos adaptados a distintos volúmenes de carga.
+                        Transporte de mercancías a nivel nacional con vehículos adaptados a distintos volúmenes de carga
                     </p>
                     <a href="<?php echo isset($_SESSION['usuario']) ? 'solicitar.php?servicio=transporte' : 'login.php?redir=transporte'; ?>"
-                       class="btn btn-danger mt-auto">
-                        Solicitar
-                    </a>
+                       class="btn btn-danger mt-auto">Solicitar</a>
                 </div>
             </div>
 
@@ -105,12 +190,10 @@ require_once 'config/bd.php';
                     <i class="bi bi-building fs-1 text-danger mb-3"></i>
                     <h5 class="fw-bold">Almacenamiento en bodega</h5>
                     <p class="text-muted small">
-                        Espacio de almacenamiento en nuestras instalaciones, con control y gestión de mercancía.    
+                        Espacio de almacenamiento en nuestras instalaciones, con control y gestión de mercancía
                     </p>
                     <a href="<?php echo isset($_SESSION['usuario']) ? 'solicitar.php?servicio=almacenamiento' : 'login.php?redir=almacenamiento'; ?>"
-                       class="btn btn-danger mt-auto">
-                        Solicitar
-                    </a>
+                       class="btn btn-danger mt-auto">Solicitar</a>
                 </div>
             </div>
 
@@ -119,12 +202,10 @@ require_once 'config/bd.php';
                     <i class="bi bi-lightning-charge fs-1 text-danger mb-3"></i>
                     <h5 class="fw-bold">Transporte urgente</h5>
                     <p class="text-muted small">
-                        Servicio prioritario para entregas rápidas cuando el tiempo es un factor clave.
+                        Servicio prioritario para entregas rápidas cuando el tiempo es un factor clave
                     </p>
                     <a href="<?php echo isset($_SESSION['usuario']) ? 'solicitar.php?servicio=urgente' : 'login.php?redir=urgente'; ?>"
-                       class="btn btn-danger mt-auto">
-                        Solicitar
-                    </a>
+                       class="btn btn-danger mt-auto">Solicitar</a>
                 </div>
             </div>
 
@@ -133,16 +214,86 @@ require_once 'config/bd.php';
                     <i class="bi bi-boxes fs-1 text-danger mb-3"></i>
                     <h5 class="fw-bold">Logística integral</h5>
                     <p class="text-muted small">
-                        Gestión completa desde la recogida hasta la entrega final, combinando transporte y almacenamiento.    
+                        Gestión completa desde la recogida hasta la entrega final, combinando transporte y almacenamiento.
                     </p>
                     <a href="<?php echo isset($_SESSION['usuario']) ? 'solicitar.php?servicio=integral' : 'login.php?redir=integral'; ?>"
-                       class="btn btn-danger mt-auto">
-                        Solicitar
-                    </a>
+                       class="btn btn-danger mt-auto">Solicitar</a>
                 </div>
             </div>
 
         </div>
+    </div>
+</section>
+
+<!-- ── FLOTA ──────────────────────────────────────────────────── -->
+<section class="py-5 bg-light" id="flota">
+    <div class="container">
+
+        <div class="seccion-titulo">
+            <h2>Nuestra flota</h2>
+            <div class="linea"></div>
+            <p class="mt-3">
+                Vehículos operativos preparados para distintos tipos de transporte y capacidades de carga
+            </p>
+        </div>
+
+        <?php if (!empty($vehiculos)): ?>
+        <div class="row g-4">
+            <?php foreach ($vehiculos as $v): ?>
+            <div class="col-md-6 col-lg-3">
+                <div class="flota-card p-4 h-100">
+
+                    <div class="text-center mb-3">
+                        <?php
+                        $imagen = "Imagenes/" . $v['MATRICULA_VEHI'] . ".jpg";
+                        if (!file_exists($imagen)) {
+                            $imagen = "Imagenes/default.jpg";
+                        }
+                        ?>
+                        <img src="<?php echo $imagen; ?>"
+                            class="img-fluid rounded mb-2"
+                            style="height:120px; width:100%; object-fit:cover;">
+                    </div>
+
+                    <h6 class="fw-bold mb-1">
+                        <?php echo htmlspecialchars($v['MARCA_VEHI']); ?>
+                        <?php echo htmlspecialchars($v['MODELO_VEHI']); ?>
+                    </h6>
+
+                    <p class="text-muted small mb-3">
+                        <i class="bi bi-credit-card me-1"></i>
+                        <?php echo htmlspecialchars($v['MATRICULA_VEHI']); ?>
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="capacidad-badge">
+                            <?php echo number_format($v['CAPACIDAD_VEHI'], 0, ',', '.'); ?> kg
+                        </span>
+                        <?php
+                        $estado = $v['ESTADO_MANTENIMIENTO_VEHI'];
+                        $clase  = match($estado) {
+                            'Operativo'    => 'bg-success text-white',
+                            'Mantenimiento'=> 'bg-warning text-dark',
+                            'En revision'  => 'bg-info text-dark',
+                            default        => 'bg-secondary text-white'
+                        };
+                        ?>
+                        <span class="estado-badge <?php echo $clase; ?>">
+                            <?php echo htmlspecialchars($estado); ?>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php else: ?>
+        <div class="text-center text-muted">
+            <i class="bi bi-truck fs-1"></i>
+            <p class="mt-2">Información de flota no disponible.</p>
+        </div>
+        <?php endif; ?>
+
     </div>
 </section>
 
@@ -150,97 +301,53 @@ require_once 'config/bd.php';
 <section class="py-5 bg-white">
     <div class="container">
 
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">¿Por qué elegirnos?</h2>
+        <div class="seccion-titulo">
+            <h2>¿Por qué elegirnos?</h2>
+            <div class="linea"></div>
         </div>
 
         <div class="row g-4 justify-content-center">
 
-            <div class="col-md-3 text-center">
-                <i class="bi bi-truck-front fs-1 text-danger"></i>
-                <h5 class="fw-bold mt-2">Flota propia</h5>
-                <p class="text-muted small">
-                    Vehículos propios que permiten adaptarnos a distintos tipos de carga.
-                </p>
-            </div>
-
-            <div class="col-md-3 text-center">
-                <i class="bi bi-geo-alt fs-1 text-danger"></i>
-                <h5 class="fw-bold mt-2">Cobertura nacional</h5>
-                <p class="text-muted small">
-                    Operamos en toda España con base
-                    en Mérida, Extremadura.
-                </p>
-            </div>
-
-            <div class="col-md-3 text-center">
-                <i class="bi bi-shield-check fs-1 text-danger"></i>
-                <h5 class="fw-bold mt-2">Seguridad garantizada</h5>
-                <p class="text-muted small">
-                    Control del estado de la mercancía durante todo el proceso.
-                </p>
-            </div>
-
-            <div class="col-md-3 text-center">
-                <i class="bi bi-graph-up fs-1 text-danger"></i>
-                <h5 class="fw-bold mt-2">Seguimiento online</h5>
-                <p class="text-muted small">
-                    Consulta el estado de tus envíos
-                    desde tu perfil.
-                </p>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- Sección flota — conecta a la BD y muestra los vehículos -->
-<section class="py-5 bg-white" id="flota">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Nuestra flota</h2>
-            <p class="text-muted">Vehículos operativos preparados para distintos tipos de transporte
-            </p>
-        </div>
-        <div class="row g-4">
-            <?php
-            $pdo  = conectar();
-            $stmt = $pdo->query(
-                "SELECT MATRICULA_VEHI, MARCA_VEHI, MODELO_VEHI,
-                        CAPACIDAD_VEHI, ESTADO_MANTENIMIENTO_VEHI
-                 FROM VEHICULOS
-                 WHERE ESTADO_MANTENIMIENTO_VEHI = 'Operativo'"
-            );
-            $vehiculos = $stmt->fetchAll();
-            foreach ($vehiculos as $v):
-            ?>
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 shadow-sm text-center p-3">
-                    <?php
-                    $imagen = "Imagenes/" . $v['MATRICULA_VEHI'] . ".jpg";
-
-                    if (!file_exists($imagen)) {
-                        $imagen = "Imagenes/default.jpg";
-                    }
-                    ?>
-                    <img src="<?php echo $imagen; ?>" 
-                    class="img-fluid mb-2"
-                    style="height:120px; object-fit:cover;">
-
-                    <h6 class="fw-bold">
-                        <?php echo htmlspecialchars($v['MARCA_VEHI']); ?>
-                        <?php echo htmlspecialchars($v['MODELO_VEHI']); ?>
-                    </h6>
-                    <p class="text-muted small mb-1">
-                        Matricula: <?php echo htmlspecialchars($v['MATRICULA_VEHI']); ?>
+            <div class="col-md-3">
+                <div class="porque-item">
+                    <i class="bi bi-truck-front"></i>
+                    <h5>Flota propia</h5>
+                    <p class="text-muted small">
+                        Vehículos propios que permiten adaptarnos a distintos tipos de carga
                     </p>
-                    <p class="text-muted small mb-0">
-                        Capacidad: <?php echo $v['CAPACIDAD_VEHI']; ?> kg
-                    </p>
-                    <span class="badge bg-success mt-2">Operativo</span>
                 </div>
             </div>
-            <?php endforeach; ?>
+
+            <div class="col-md-3">
+                <div class="porque-item">
+                    <i class="bi bi-geo-alt"></i>
+                    <h5>Cobertura nacional</h5>
+                    <p class="text-muted small">
+                        Servicio disponible en todo el territorio nacional
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="porque-item">
+                    <i class="bi bi-shield-check"></i>
+                    <h5>Seguridad garantizada</h5>
+                    <p class="text-muted small">
+                        Control del estado de la mercancía durante todo el proceso.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="porque-item">
+                    <i class="bi bi-graph-up"></i>
+                    <h5>Seguimiento online</h5>
+                    <p class="text-muted small">
+                        Consulta del estado de los envíos desde la plataforma
+                    </p>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
@@ -249,47 +356,69 @@ require_once 'config/bd.php';
 <section class="py-5 bg-dark text-white" id="contacto">
     <div class="container">
 
-        <div class="text-center mb-4">
-            <h2 class="fw-bold">Contacto</h2>
-            <p class="text-white-50">Puedes ponerte en contacto con nosotros para cualquier consulta o solicitud de servicio.
-            </p>
+        <div class="seccion-titulo">
+            <h2 class="text-white">Contacto</h2>
+            <div class="linea"></div>
+            <p class="text-white-50 mt-3">Puedes ponerte en contacto con nosotros para cualquier consulta
+    o solicitud de servicio</p>
         </div>
 
         <div class="row justify-content-center g-4 text-center">
 
             <div class="col-md-3">
-                <i class="bi bi-geo-alt-fill fs-2 text-danger"></i>
-                <h6 class="fw-bold mt-2">Dirección</h6>
-                <p class="text-white small">Mérida, Extremadura, España</p>
+                <div class="contacto-item">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <h6 class="fw-bold mt-2">Dirección</h6>
+                    <p class="text-white-50 small">Mérida, Extremadura, España</p>
+                </div>
             </div>
 
             <div class="col-md-3">
-                <i class="bi bi-telephone-fill fs-2 text-danger"></i>
-                <h6 class="fw-bold mt-2">Teléfono</h6>
-                <p class="text-white small">+34 924 000 000</p>
+                <div class="contacto-item">
+                    <i class="bi bi-telephone-fill"></i>
+                    <h6 class="fw-bold mt-2">Teléfono</h6>
+                    <p class="text-white-50 small">+34 642 831 094</p>
+                </div>
             </div>
 
             <div class="col-md-3">
-                <i class="bi bi-envelope-fill fs-2 text-danger"></i>
-                <h6 class="fw-bold mt-2">Email</h6>
-                <p class="text-white small">contacto@logitrans.es</p>
+                <div class="contacto-item">
+                    <i class="bi bi-envelope-fill"></i>
+                    <h6 class="fw-bold mt-2">Email</h6>
+                    <p class="text-white-50 small">contacto@logitrans.es</p>
+                </div>
             </div>
 
             <div class="col-md-3">
-                <i class="bi bi-clock-fill fs-2 text-danger"></i>
-                <h6 class="fw-bold mt-2">Horario</h6>
-                <p class="text-white small">Lunes a Viernes: 8:00 - 18:00</p>
+                <div class="contacto-item">
+                    <i class="bi bi-clock-fill"></i>
+                    <h6 class="fw-bold mt-2">Horario</h6>
+                    <p class="text-white-50 small">Lunes a Viernes: 8:00 - 18:00</p>
+                </div>
             </div>
 
         </div>
     </div>
 </section>
 
-<!-- ── PIE DE PÁGINA ──────────────────────────────────────────── -->
-<footer class="bg-black text-white text-center py-3">
-    <small>© 2025 LogiTrans S.A. — Todos los derechos reservados</small>
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer class="py-4 text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                <span class="fw-bold">
+                    <i class="bi bi-truck-front-fill text-danger me-1"></i>LogiTrans S.A.
+                </span>
+                <span class="text-white-50 ms-2 small">Mérida, Extremadura</span>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <small class="text-white-50">© 2025 LogiTrans S.A. — Todos los derechos reservados</small>
+            </div>
+        </div>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -44,13 +44,6 @@ $filtro_actual = $_GET['filtro'] ?? '';
         <?php endif; ?>
     </a>
 
-    <a href="index.php?filtro=REVISANDO" class="sidebar-link <?php echo $filtro_actual === 'REVISANDO' ? 'activo' : ''; ?>">
-        <i class="bi bi-eye"></i> En revision
-        <?php if ($revisando > 0): ?>
-            <span class="badge bg-info ms-auto"><?php echo $revisando; ?></span>
-        <?php endif; ?>
-    </a>
-
     <a href="index.php?filtro=ACEPTADA" class="sidebar-link <?php echo $filtro_actual === 'ACEPTADA' ? 'activo' : ''; ?>">
         <i class="bi bi-check-circle"></i> Aceptadas
         <?php if ($aceptadas > 0): ?>

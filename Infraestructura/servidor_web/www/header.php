@@ -1,40 +1,44 @@
-<?php
-// Iniciar sesión si no está iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+
+
+ <?php
+if (session_status() === PHP_SESSION_NONE) session_start();
 ?>
-<nav class="navbar bg-dark py-2">
-  <div class="container-fluid d-flex align-items-center">
 
-    <!-- Logo -->
-    <a href="index.php" class="navbar-brand">
-      <img src="Imagenes/logo.png" height="45">
-    </a>
+<nav class="navbar navbar-expand-lg navbar-logitrans">
+    <div class="container">
 
-    <!-- Título centrado -->
-    <a href="index.php" class="text-white fw-bold fs-4 mx-auto text-decoration-none">
-      LogiTrans S.A.
-    </a>
+        <a class="navbar-brand" href="index.php">
+            <img src="Imagenes/logo_sinfond.png" height="35" class="me-2">
+            LogiTrans
+        </a>
 
-    <!-- Menú derecha -->
-    <div class="d-flex gap-2 align-items-center">
-      <a href="index.php#nosotros" class="text-white text-decoration-none">Nosotros</a>
-      <a href="index.php#servicios" class="text-white text-decoration-none">Servicios</a>
-      <a href="index.php#flota" class="text-white text-decoration-none">Flota</a>
-      <a href="index.php#contacto" class="text-white text-decoration-none">Contacto</a>
+        <button class="navbar-toggler border-secondary" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon" style="filter: invert(1)"></span>
+        </button>
 
-      <?php if (isset($_SESSION['usuario'])): ?>
-        <span class="text-white me-2">
-          Hola, <?php echo htmlspecialchars($_SESSION['usuario']); ?>
-        </span>
-        <a href="dashboard.php" class="btn btn-outline-light btn-sm">Mi panel</a>
-        <a href="logout.php" class="btn btn-warning btn-sm">Cerrar sesión</a>
-      <?php else: ?>
-        <a href="registro.php" class="btn btn-danger btn-sm">Registrarse</a>
-        <a href="login.php" class="btn btn-danger btn-sm">Iniciar sesión</a>
-      <?php endif; ?>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="index.php#nosotros">Nosotros</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#servicios">Servicios</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#flota">Flota</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php#contacto">Contacto</a></li>
+            </ul>
+
+            <div class="d-flex gap-2">
+                <?php if (isset($_SESSION['usuario'])): ?>
+                    <a href="dashboard.php" class="btn-nav-login">
+                        <i class="bi bi-person-circle fs-7"></i>
+                        <?php echo htmlspecialchars($_SESSION['usuario']); ?>
+                    </a>
+                    <a href="logout.php" class="btn-nav-login"
+                    onclick="return confirm('¿Seguro que quieres cerrar sesión?')">Salir</a>
+                <?php else: ?>
+                    <a href="login.php" class="btn-nav-login">Iniciar sesión</a>
+                    <a href="registro.php" class="btn-nav-register">Registrarse</a>
+                <?php endif; ?>
+            </div>
+        </div>
+
     </div>
-
-  </div>
 </nav>

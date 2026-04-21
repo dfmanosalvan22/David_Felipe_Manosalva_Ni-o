@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario'])) {
 
 $pdo = conectar();
 
-// Recoger solicitudes del cliente
+// Solicitudes del cliente
 $stmt = $pdo->prepare(
     "SELECT ID_SOLICITUD, TIPO_SERVICIO, TIPO_MERCANCIA,
             ORIGEN, DESTINO, ESTADO, CREATED_AT
@@ -20,7 +20,7 @@ $stmt = $pdo->prepare(
 $stmt->execute([$_SESSION['id_cliente']]);
 $solicitudes = $stmt->fetchAll();
 
-// Recoger envios del cliente (solo los que tienen solicitud aceptada)
+// Envios del cliente
 $stmt2 = $pdo->prepare(
     "SELECT E.ID_ENVIO, E.ORIGEN, E.DESTINO, E.ESTADO_ENVIO, E.FECHA_ENVIO,
             EMP.NOMBRE_EMP, EMP.APELLIDOS_EMP,
@@ -36,7 +36,6 @@ $stmt2 = $pdo->prepare(
 $stmt2->execute([$_SESSION['id_cliente']]);
 $envios = $stmt2->fetchAll();
 
-// Seccion activa del sidebar
 $seccion = $_GET['seccion'] ?? 'solicitudes';
 ?>
 <!DOCTYPE html>
@@ -52,15 +51,28 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
 </head>
 <body class="bg-light">
 
-<!-- Navbar superior -->
-<div class="d-flex align-items-center bg-dark px-3 py-2">
-    <button onclick="toggleSidebar()" class="btn btn-dark border-0 me-3">
-        <i class="bi bi-list fs-4 text-white"></i>
-    </button>
-    <span class="text-white fw-bold">LogiTrans — Mi panel</span>
-</div>
+<!-- ── NAVBAR SUPERIOR ────────────────────────────────── -->
+<nav class="navbar navbar-logitrans px-3">
+    <div class="d-flex align-items-center gap-3">
+        <button onclick="toggleSidebar()" class="btn btn-dark border-0 p-1">
+            <i class="bi bi-list fs-4 text-white"></i>
+        </button>
+        <a href="index.php" class="navbar-brand mb-0">
+            <img src="Imagenes/logo_sinfond.png" alt="LogiTrans" height="32"
+                 class="d-inline-block align-text-top me-1">LogiTrans
+        </a>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <span class="text-white-50 small d-none d-md-inline">
+            <i class="bi bi-person-circle me-1"></i><?php echo htmlspecialchars($_SESSION['usuario']); ?>
+        </span>
+        <a href="logout.php" class="btn-nav-login btn-sm" onclick="return confirm('¿Seguro que quieres cerrar sesión?')">
+            <i class="bi bi-box-arrow-right me-1"></i>Salir
+        </a>
+    </div>
+</nav>
 
-<!-- Sidebar del cliente -->
+<!-- ── SIDEBAR ────────────────────────────────────────── -->
 <div class="sidebar" id="sidebar">
 
     <div class="sidebar-header">
@@ -89,7 +101,7 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
 
     <a href="dashboard.php?seccion=envios"
        class="sidebar-link <?php echo $seccion === 'envios' ? 'activo' : ''; ?>">
-        <i class="bi bi-truck"></i> Mis envios
+        <i class="bi bi-truck"></i> Mis envíos
         <?php if (count($envios) > 0): ?>
             <span class="badge bg-secondary ms-auto"><?php echo count($envios); ?></span>
         <?php endif; ?>
@@ -121,14 +133,15 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
     </a>
 
     <a href="logout.php" class="sidebar-link text-danger">
-        <i class="bi bi-box-arrow-left"></i> Cerrar sesion
+        <a href="logout.php" class="btn-nav-login btn-sm" onclick="return confirm('¿Seguro que quieres cerrar sesión?')">
+        <i class="bi bi-box-arrow-left"></i> Cerrar sesión
     </a>
 
 </div>
 
 <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-<!-- Contenido principal -->
+<!-- ── CONTENIDO PRINCIPAL ────────────────────────────── -->
 <div class="contenido-principal">
 
     <?php if ($seccion === 'solicitudes'): ?>
@@ -137,15 +150,15 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
 
         <?php if (empty($solicitudes)): ?>
             <div class="alert alert-info">
-                Aun no tienes solicitudes.
+                Aún no tienes solicitudes.
                 <a href="index.php#servicios" class="alert-link">Ver servicios disponibles</a>
             </div>
         <?php else: ?>
             <?php foreach ($solicitudes as $s): ?>
-            <div class="card shadow-sm mb-3">
+            <div class="card shadow-sm mb-3 servicio-card">
                 <div class="card-body">
 
-                    <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
                         <h5 class="fw-bold mb-0">
                             #<?php echo $s['ID_SOLICITUD']; ?>
                             — <?php echo $s['TIPO_SERVICIO']; ?>
@@ -165,16 +178,14 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
                     </div>
 
                     <p class="mb-1">
-                        <strong>Mercancia:</strong>
+                        <strong>Mercancía:</strong>
                         <?php echo htmlspecialchars($s['TIPO_MERCANCIA']); ?>
                     </p>
 
                     <?php if ($s['ORIGEN'] || $s['DESTINO']): ?>
                     <p class="mb-1">
-                        <strong>Origen:</strong>
-                        <?php echo htmlspecialchars($s['ORIGEN'] ?? '—'); ?>
-                        | <strong>Destino:</strong>
-                        <?php echo htmlspecialchars($s['DESTINO'] ?? '—'); ?>
+                        <strong>Origen:</strong> <?php echo htmlspecialchars($s['ORIGEN'] ?? '—'); ?>
+                        | <strong>Destino:</strong> <?php echo htmlspecialchars($s['DESTINO'] ?? '—'); ?>
                     </p>
                     <?php endif; ?>
 
@@ -189,20 +200,20 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
 
     <?php elseif ($seccion === 'envios'): ?>
 
-        <h4 class="fw-bold mb-4">Mis envios</h4>
+        <h4 class="fw-bold mb-4">Mis envíos</h4>
 
         <?php if (empty($envios)): ?>
             <div class="alert alert-info">
-                Aun no tienes envios activos. Cuando una solicitud sea aceptada
-                aparecera aqui con toda la informacion.
+                Aún no tienes envíos activos. Cuando una solicitud sea aceptada
+                aparecerá aquí con toda la información.
             </div>
         <?php else: ?>
             <?php foreach ($envios as $e): ?>
-            <div class="card shadow-sm mb-3">
+            <div class="card shadow-sm mb-3 servicio-card">
                 <div class="card-body">
 
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <h5 class="fw-bold mb-0">Envio #<?php echo $e['ID_ENVIO']; ?></h5>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="fw-bold mb-0">Envío #<?php echo $e['ID_ENVIO']; ?></h5>
                         <?php
                         $color = match($e['ESTADO_ENVIO']) {
                             'PENDIENTE'   => 'warning',
@@ -223,7 +234,7 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
                                 <strong>Servicio:</strong> <?php echo $e['TIPO_SERVICIO']; ?>
                             </p>
                             <p class="mb-1">
-                                <strong>Mercancia:</strong>
+                                <strong>Mercancía:</strong>
                                 <?php echo htmlspecialchars($e['TIPO_MERCANCIA']); ?>
                             </p>
                             <p class="mb-1">
@@ -239,7 +250,6 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
                                 <?php echo date('d/m/Y', strtotime($e['FECHA_ENVIO'])); ?>
                             </p>
                         </div>
-
                         <div class="col-md-6">
                             <p class="mb-1">
                                 <i class="bi bi-person me-1 text-danger"></i>
@@ -249,7 +259,7 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
                             </p>
                             <p class="mb-0">
                                 <i class="bi bi-truck me-1 text-danger"></i>
-                                <strong>Vehiculo:</strong>
+                                <strong>Vehículo:</strong>
                                 <?php echo htmlspecialchars($e['MATRICULA_VEHI']); ?>
                                 — <?php echo htmlspecialchars($e['MARCA_VEHI']); ?>
                                 <?php echo htmlspecialchars($e['MODELO_VEHI']); ?>
@@ -266,12 +276,11 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    sidebar.classList.toggle('abierto');
-    overlay.classList.toggle('visible');
+    document.getElementById('sidebar').classList.toggle('abierto');
+    document.getElementById('overlay').classList.toggle('visible');
 }
 </script>
 
