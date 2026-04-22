@@ -161,6 +161,68 @@ try {
     </div>
 </section>
 
+<!-- ── CARRUSEL ──────────────────────────────────────────────── -->
+<section class="py-5 bg-white">
+    <div class="container">
+
+        <div class="seccion-titulo">
+            <h2>Nuestra flota en acción</h2>
+            <div class="linea"></div>
+            <p class="mt-3">Vehículos preparados para cualquier tipo de transporte</p>
+        </div>
+
+        <div id="carruselFlota" class="carousel slide"
+             data-bs-ride="carousel" data-bs-interval="3000">
+
+            <!-- Indicadores -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carruselFlota" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#carruselFlota" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#carruselFlota" data-bs-slide-to="2"></button>
+                <button type="button" data-bs-target="#carruselFlota" data-bs-slide-to="3"></button>
+            </div>
+
+            <!-- Imágenes -->
+            <div class="carousel-inner rounded shadow">
+
+                <div class="carousel-item active">
+                    <img src="Imagenes/cmon_atar.png" class="d-block w-100"
+                         style="height: 420px; object-fit: cover;">
+                </div>
+
+                <div class="carousel-item">
+                    <img src="Imagenes/carru1.png" class="d-block w-100"
+                         style="height: 420px; object-fit: cover;">
+                </div>
+
+                <div class="carousel-item">
+                    <img src="Imagenes/carru2.png" class="d-block w-100"
+                         style="height: 420px; object-fit: cover;">
+                </div>
+
+                <div class="carousel-item">
+                    <img src="Imagenes/carru3.png" class="d-block w-100"
+                         style="height: 420px; object-fit: cover;">
+                </div>
+
+            </div>
+
+            <!-- Controles -->
+            <button class="carousel-control-prev" type="button"
+                    data-bs-target="#carruselFlota" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+
+            <button class="carousel-control-next" type="button"
+                    data-bs-target="#carruselFlota" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+
+        </div>
+    </div>
+</section>
+
+
 <!-- ── SERVICIOS ─────────────────────────────────────────────── -->
 <section class="py-5 bg-white" id="servicios">
     <div class="container">

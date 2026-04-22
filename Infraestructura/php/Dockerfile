@@ -5,7 +5,7 @@ FROM php:8.2-fpm
 # pdo y pdo_mysql: necesarios para usar PDO con MySQL/MariaDB
 # mysqli: extension alternativa, la incluimos por compatibilidad
 RUN docker-php-ext-install mysqli pdo pdo_mysql
-
+RUN ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime
 # Directorio donde estara el codigo PHP
 # Este directorio se monta como volumen desde el docker-compose
 WORKDIR /var/www/html

@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Europe/Madrid');
 require_once 'config/bd.php';
 
 if (!isset($_SESSION['usuario'])) {
@@ -36,6 +37,21 @@ $stmt2 = $pdo->prepare(
 $stmt2->execute([$_SESSION['id_cliente']]);
 $envios = $stmt2->fetchAll();
 
+// Mensajes agrupados por solicitud
+$mensajes = [];
+if (!empty($solicitudes)) {
+    $ids = implode(',', array_column($solicitudes, 'ID_SOLICITUD'));
+    $msgs = $pdo->query(
+        "SELECT ID_SOLICITUD, REMITENTE, MENSAJE, CREATED_AT
+         FROM MENSAJES
+         WHERE ID_SOLICITUD IN ($ids)
+         ORDER BY CREATED_AT ASC"
+    )->fetchAll();
+    foreach ($msgs as $m) {
+        $mensajes[$m['ID_SOLICITUD']][] = $m;
+    }
+}
+
 $seccion = $_GET['seccion'] ?? 'solicitudes';
 ?>
 <!DOCTYPE html>
@@ -48,6 +64,39 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="CSS/style.css">
     <link rel="stylesheet" href="CSS/dashboard.css">
+    <style>
+        .chat-box {
+            max-height: 220px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .burbuja {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+        .burbuja-cliente {
+            background: #dc3545;
+            color: #fff;
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+        }
+        .burbuja-empleado {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            color: #333;
+            border-bottom-left-radius: 2px;
+        }
+        .burbuja-fecha {
+            font-size: 0.72rem;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -66,7 +115,8 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
         <span class="text-white-50 small d-none d-md-inline">
             <i class="bi bi-person-circle me-1"></i><?php echo htmlspecialchars($_SESSION['usuario']); ?>
         </span>
-        <a href="logout.php" class="btn-nav-login btn-sm" onclick="return confirm('¿Seguro que quieres cerrar sesión?')">
+        <a href="logout.php" class="btn-nav-login btn-sm"
+           onclick="return confirm('¿Seguro que quieres cerrar sesión?')">
             <i class="bi bi-box-arrow-right me-1"></i>Salir
         </a>
     </div>
@@ -88,7 +138,6 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
     </div>
 
     <hr class="sidebar-divider">
-
     <p class="sidebar-titulo">Mis servicios</p>
 
     <a href="dashboard.php?seccion=solicitudes"
@@ -108,7 +157,6 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
     </a>
 
     <hr class="sidebar-divider">
-
     <p class="sidebar-titulo">Solicitar servicio</p>
 
     <a href="solicitar.php?servicio=transporte" class="sidebar-link">
@@ -125,15 +173,13 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
     </a>
 
     <hr class="sidebar-divider">
-
     <p class="sidebar-titulo">Cuenta</p>
 
     <a href="perfil.php" class="sidebar-link <?php echo basename($_SERVER['PHP_SELF']) === 'perfil.php' ? 'activo' : ''; ?>">
         <i class="bi bi-person"></i> Mis datos
     </a>
-
-    <a href="logout.php" class="sidebar-link text-danger">
-        <a href="logout.php" class="btn-nav-login btn-sm" onclick="return confirm('¿Seguro que quieres cerrar sesión?')">
+    <a href="logout.php" class="sidebar-link text-danger"
+       onclick="return confirm('¿Seguro que quieres cerrar sesión?')">
         <i class="bi bi-box-arrow-left"></i> Cerrar sesión
     </a>
 
@@ -155,7 +201,7 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
             </div>
         <?php else: ?>
             <?php foreach ($solicitudes as $s): ?>
-            <div class="card shadow-sm mb-3 servicio-card">
+            <div class="card shadow-sm mb-3 servicio-card" id="chat-<?php echo $s['ID_SOLICITUD']; ?>">
                 <div class="card-body">
 
                     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -166,7 +212,6 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
                         <?php
                         $color = match($s['ESTADO']) {
                             'PENDIENTE' => 'warning',
-                            'REVISANDO' => 'info',
                             'ACEPTADA'  => 'success',
                             'RECHAZADA' => 'danger',
                             default     => 'secondary'
@@ -189,9 +234,46 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
                     </p>
                     <?php endif; ?>
 
-                    <p class="mb-0 text-muted small">
+                    <p class="mb-3 text-muted small">
                         <?php echo date('d/m/Y H:i', strtotime($s['CREATED_AT'])); ?>
                     </p>
+
+                    <!-- ── CHAT ──────────────────────────────── -->
+                    <hr class="my-2">
+                    <p class="small fw-semibold mb-2">
+                        <i class="bi bi-chat-dots me-1 text-danger"></i>Mensajes
+                    </p>
+
+                    <!-- Burbujas de mensajes -->
+                    <div class="chat-box mb-2">
+                        <?php if (empty($mensajes[$s['ID_SOLICITUD']])): ?>
+                            <p class="text-muted small text-center mb-0">
+                                Sin mensajes aún. Puedes escribir al equipo de LogiTrans.
+                            </p>
+                        <?php else: ?>
+                            <?php foreach ($mensajes[$s['ID_SOLICITUD']] as $m): ?>
+                            <div class="d-flex <?php echo $m['REMITENTE'] === 'cliente' ? 'justify-content-end' : 'justify-content-start'; ?>">
+                                <div class="burbuja <?php echo $m['REMITENTE'] === 'cliente' ? 'burbuja-cliente' : 'burbuja-empleado'; ?>">
+                                    <div><?php echo htmlspecialchars($m['MENSAJE']); ?></div>
+                                    <div class="burbuja-fecha">
+                                        <?php echo $m['REMITENTE'] === 'cliente' ? 'Tú' : 'LogiTrans'; ?>
+                                        · <?php echo date('d/m H:i', strtotime($m['CREATED_AT'])); ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Formulario para escribir -->
+                    <form method="POST" action="enviar_mensaje.php" class="d-flex gap-2">
+                        <input type="hidden" name="id_solicitud" value="<?php echo $s['ID_SOLICITUD']; ?>">
+                        <input type="text" name="mensaje" class="form-control form-control-sm"
+                               placeholder="Escribe un mensaje..." required maxlength="500">
+                        <button type="submit" class="btn btn-danger btn-sm px-3">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </form>
 
                 </div>
             </div>
@@ -230,24 +312,12 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
 
                     <div class="row">
                         <div class="col-md-6">
-                            <p class="mb-1">
-                                <strong>Servicio:</strong> <?php echo $e['TIPO_SERVICIO']; ?>
-                            </p>
-                            <p class="mb-1">
-                                <strong>Mercancía:</strong>
-                                <?php echo htmlspecialchars($e['TIPO_MERCANCIA']); ?>
-                            </p>
-                            <p class="mb-1">
-                                <strong>Origen:</strong>
-                                <?php echo htmlspecialchars($e['ORIGEN'] ?? '—'); ?>
-                            </p>
-                            <p class="mb-1">
-                                <strong>Destino:</strong>
-                                <?php echo htmlspecialchars($e['DESTINO'] ?? '—'); ?>
-                            </p>
+                            <p class="mb-1"><strong>Servicio:</strong> <?php echo $e['TIPO_SERVICIO']; ?></p>
+                            <p class="mb-1"><strong>Mercancía:</strong> <?php echo htmlspecialchars($e['TIPO_MERCANCIA']); ?></p>
+                            <p class="mb-1"><strong>Origen:</strong> <?php echo htmlspecialchars($e['ORIGEN'] ?? '—'); ?></p>
+                            <p class="mb-1"><strong>Destino:</strong> <?php echo htmlspecialchars($e['DESTINO'] ?? '—'); ?></p>
                             <p class="mb-0 text-muted small">
-                                <strong>Fecha:</strong>
-                                <?php echo date('d/m/Y', strtotime($e['FECHA_ENVIO'])); ?>
+                                <strong>Fecha:</strong> <?php echo date('d/m/Y', strtotime($e['FECHA_ENVIO'])); ?>
                             </p>
                         </div>
                         <div class="col-md-6">
@@ -282,6 +352,11 @@ function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('abierto');
     document.getElementById('overlay').classList.toggle('visible');
 }
+
+// Scroll al final del chat al cargar
+document.querySelectorAll('.chat-box').forEach(box => {
+    box.scrollTop = box.scrollHeight;
+});
 </script>
 
 </body>

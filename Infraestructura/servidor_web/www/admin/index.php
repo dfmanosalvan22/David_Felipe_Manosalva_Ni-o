@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Europe/Madrid');
 require_once '../config/bd.php';
 
 if (!isset($_SESSION['empleado'])) {
@@ -13,7 +14,7 @@ $pdo = conectar();
 $filtro = $_GET['filtro'] ?? '';
 
 // Construir la consulta segun el filtro
-if ($filtro && in_array($filtro, ['PENDIENTE', 'REVISANDO', 'ACEPTADA', 'RECHAZADA'])) {
+if ($filtro && in_array($filtro, ['PENDIENTE', 'ACEPTADA', 'RECHAZADA'])) {
     $stmt = $pdo->prepare(
         "SELECT S.ID_SOLICITUD, S.TIPO_SERVICIO, S.TIPO_MERCANCIA,
                 S.DESCRIPCION, S.PESO_KG, S.VOLUMEN_M3,
@@ -42,10 +43,23 @@ if ($filtro && in_array($filtro, ['PENDIENTE', 'REVISANDO', 'ACEPTADA', 'RECHAZA
 
 $solicitudes = $stmt->fetchAll();
 
-// Titulo segun filtro
+// Mensajes agrupados por solicitud
+$mensajes = [];
+if (!empty($solicitudes)) {
+    $ids  = implode(',', array_column($solicitudes, 'ID_SOLICITUD'));
+    $msgs = $pdo->query(
+        "SELECT ID_SOLICITUD, REMITENTE, MENSAJE, CREATED_AT
+         FROM MENSAJES
+         WHERE ID_SOLICITUD IN ($ids)
+         ORDER BY CREATED_AT ASC"
+    )->fetchAll();
+    foreach ($msgs as $m) {
+        $mensajes[$m['ID_SOLICITUD']][] = $m;
+    }
+}
+
 $titulos = [
     'PENDIENTE' => 'Solicitudes pendientes',
-    'REVISANDO' => 'Solicitudes en revisión',
     'ACEPTADA'  => 'Solicitudes aceptadas',
     'RECHAZADA' => 'Solicitudes rechazadas',
     ''          => 'Todas las solicitudes',
@@ -61,6 +75,39 @@ $titulo = $titulos[$filtro] ?? 'Todas las solicitudes';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="admin.css">
+    <style>
+        .chat-box {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .burbuja {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+        .burbuja-empleado {
+            background: #1a1a2e;
+            color: #fff;
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+        }
+        .burbuja-cliente {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            color: #333;
+            border-bottom-left-radius: 2px;
+        }
+        .burbuja-fecha {
+            font-size: 0.72rem;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -71,7 +118,8 @@ $titulo = $titulos[$filtro] ?? 'Todas las solicitudes';
             <i class="bi bi-list fs-4 text-white"></i>
         </button>
         <span class="text-white fw-bold">
-            <img src="../Imagenes/logo_sinfond.png" alt="LogiTrans S.A." height="35" class="d-inline-block align-text-top me-2">LogiTrans — Panel de Gestión
+            <img src="../Imagenes/logo_sinfond.png" alt="LogiTrans" height="35"
+                 class="d-inline-block align-text-top me-2">LogiTrans — Panel de Gestión
         </span>
     </div>
     <div class="d-flex align-items-center gap-2">
@@ -102,7 +150,7 @@ $titulo = $titulos[$filtro] ?? 'Todas las solicitudes';
     <?php else: ?>
 
         <?php foreach ($solicitudes as $s): ?>
-        <div class="card shadow-sm mb-3 solicitud-card">
+        <div class="card shadow-sm mb-3 solicitud-card" id="chat-<?php echo $s['ID_SOLICITUD']; ?>">
             <div class="card-body">
                 <div class="row">
 
@@ -187,7 +235,7 @@ $titulo = $titulos[$filtro] ?? 'Todas las solicitudes';
                             </p>
                         </div>
 
-                        <?php if (in_array($s['ESTADO'], ['PENDIENTE', 'REVISANDO'])): ?>
+                        <?php if ($s['ESTADO'] === 'PENDIENTE'): ?>
                         <div class="d-flex gap-2">
                             <a href="gestionar.php?id=<?php echo $s['ID_SOLICITUD']; ?>&accion=aceptar"
                                class="btn btn-success btn-sm w-100"
@@ -205,6 +253,44 @@ $titulo = $titulos[$filtro] ?? 'Todas las solicitudes';
                     </div>
 
                 </div>
+
+                <!-- ── CHAT ──────────────────────────────── -->
+                <hr class="mt-3 mb-2">
+                <p class="small fw-semibold mb-2">
+                    <i class="bi bi-chat-dots me-1 text-danger"></i>
+                    Chat con <?php echo htmlspecialchars($s['NOMBRE_CLI']); ?>
+                </p>
+
+                <div class="chat-box mb-2">
+                    <?php if (empty($mensajes[$s['ID_SOLICITUD']])): ?>
+                        <p class="text-muted small text-center mb-0">
+                            Sin mensajes. Puedes escribir al cliente desde aquí.
+                        </p>
+                    <?php else: ?>
+                        <?php foreach ($mensajes[$s['ID_SOLICITUD']] as $m): ?>
+                        <div class="d-flex <?php echo $m['REMITENTE'] === 'empleado' ? 'justify-content-end' : 'justify-content-start'; ?>">
+                            <div class="burbuja <?php echo $m['REMITENTE'] === 'empleado' ? 'burbuja-empleado' : 'burbuja-cliente'; ?>">
+                                <div><?php echo htmlspecialchars($m['MENSAJE']); ?></div>
+                                <div class="burbuja-fecha">
+                                    <?php echo $m['REMITENTE'] === 'empleado' ? 'Tú' : htmlspecialchars($s['NOMBRE_CLI']); ?>
+                                    · <?php echo date('d/m H:i', strtotime($m['CREATED_AT'])); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+
+                <form method="POST" action="../enviar_mensaje.php" class="d-flex gap-2">
+                    <input type="hidden" name="id_solicitud" value="<?php echo $s['ID_SOLICITUD']; ?>">
+                    <input type="text" name="mensaje" class="form-control form-control-sm"
+                           placeholder="Escribe un mensaje al cliente..." required maxlength="500">
+                    <button type="submit" class="btn btn-sm px-3"
+                            style="background:#1a1a2e; color:#fff;">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </form>
+
             </div>
         </div>
         <?php endforeach; ?>
@@ -216,11 +302,12 @@ $titulo = $titulos[$filtro] ?? 'Todas las solicitudes';
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    sidebar.classList.toggle('abierto');
-    overlay.classList.toggle('visible');
+    document.getElementById('sidebar').classList.toggle('abierto');
+    document.getElementById('overlay').classList.toggle('visible');
 }
+document.querySelectorAll('.chat-box').forEach(box => {
+    box.scrollTop = box.scrollHeight;
+});
 </script>
 
 </body>
