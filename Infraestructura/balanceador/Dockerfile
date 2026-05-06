@@ -4,6 +4,7 @@ FROM haproxy:2.9
 # Copiar nuestra configuracion personalizada
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 
-# Puerto 80: trafico web
-# Puerto 8080: panel de estadisticas
-EXPOSE 80 8080
+# Certificados (los montaremos desde host)
+RUN mkdir -p /usr/local/etc/haproxy/certs
+
+EXPOSE 80 443 8080
