@@ -86,6 +86,7 @@ services:
       - servidor_web2
     ports:
       - "80:80"       # Web publica
+      - "443:443" 
       - "8080:8080"   # Panel de estadisticas HAProxy
     networks:
       red_dmz:
