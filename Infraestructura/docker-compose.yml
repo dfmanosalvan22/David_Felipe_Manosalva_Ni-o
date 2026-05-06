@@ -88,6 +88,10 @@ services:
       - "80:80"       # Web publica
       - "443:443" 
       - "8080:8080"   # Panel de estadisticas HAProxy
+
+    volumes:
+    - /opt/certs:/usr/local/etc/haproxy/certs:ro
+    
     networks:
       red_dmz:
         ipv4_address: 192.168.10.2
