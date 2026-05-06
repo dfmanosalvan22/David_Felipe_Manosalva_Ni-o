@@ -48,7 +48,7 @@ $mensajes = [];
 if (!empty($solicitudes)) {
     $ids  = implode(',', array_column($solicitudes, 'ID_SOLICITUD'));
     $msgs = $pdo->query(
-        "SELECT ID_SOLICITUD, REMITENTE, MENSAJE, CREATED_AT
+        "SELECT ID_SOLICITUD, REMITENTE, MENSAJE,       CONVERT_TZ(CREATED_AT, '+00:00', '+02:00') AS CREATED_AT
          FROM MENSAJES
          WHERE ID_SOLICITUD IN ($ids)
          ORDER BY CREATED_AT ASC"

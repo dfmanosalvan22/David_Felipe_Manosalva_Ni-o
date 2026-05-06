@@ -12,11 +12,14 @@ $pdo = conectar();
 
 // Solicitudes del cliente
 $stmt = $pdo->prepare(
-    "SELECT ID_SOLICITUD, TIPO_SERVICIO, TIPO_MERCANCIA,
-            ORIGEN, DESTINO, ESTADO, CREATED_AT
-     FROM SOLICITUDES
-     WHERE ID_CLIENTE = ?
-     ORDER BY CREATED_AT DESC"
+    "SELECT S.ID_SOLICITUD, S.TIPO_SERVICIO, S.TIPO_MERCANCIA,
+            S.ORIGEN, S.DESTINO, S.ESTADO, S.CREATED_AT,
+            (SELECT E.ESTADO_ENVIO FROM ENVIOS E 
+             WHERE E.ID_SOLICITUD = S.ID_SOLICITUD 
+             LIMIT 1) AS ESTADO_ENVIO
+     FROM SOLICITUDES S
+     WHERE S.ID_CLIENTE = ?
+     ORDER BY S.CREATED_AT DESC"
 );
 $stmt->execute([$_SESSION['id_cliente']]);
 $solicitudes = $stmt->fetchAll();
@@ -42,7 +45,7 @@ $mensajes = [];
 if (!empty($solicitudes)) {
     $ids = implode(',', array_column($solicitudes, 'ID_SOLICITUD'));
     $msgs = $pdo->query(
-        "SELECT ID_SOLICITUD, REMITENTE, MENSAJE, CREATED_AT
+        "SELECT ID_SOLICITUD, REMITENTE, MENSAJE,       CONVERT_TZ(CREATED_AT, '+00:00', '+02:00') AS CREATED_AT
          FROM MENSAJES
          WHERE ID_SOLICITUD IN ($ids)
          ORDER BY CREATED_AT ASC"
@@ -265,16 +268,25 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
                         <?php endif; ?>
                     </div>
 
-                    <!-- Formulario para escribir -->
-                    <form method="POST" action="enviar_mensaje.php" class="d-flex gap-2">
-                        <input type="hidden" name="id_solicitud" value="<?php echo $s['ID_SOLICITUD']; ?>">
-                        <input type="text" name="mensaje" class="form-control form-control-sm"
-                               placeholder="Escribe un mensaje..." required maxlength="500">
-                        <button type="submit" class="btn btn-danger btn-sm px-3">
-                            <i class="bi bi-send"></i>
-                        </button>
-                    </form>
+                    <?php 
+                    $cerrado = $s['ESTADO'] === 'RECHAZADA' || $s['ESTADO_ENVIO'] === 'ENTREGADO';
+                    ?>
 
+                    <?php if (!$cerrado): ?>
+                        <form method="POST" action="enviar_mensaje.php" class="d-flex gap-2">
+                            <input type="hidden" name="id_solicitud" value="<?php echo $s['ID_SOLICITUD']; ?>">
+                            <input type="text" name="mensaje" class="form-control form-control-sm"
+                                placeholder="Escribe un mensaje..." required maxlength="500">
+                            <button type="submit" class="btn btn-danger btn-sm px-3">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </form>
+                    <?php else: ?>
+                        <p class="text-muted small mb-0 text-center">
+                            <i class="bi bi-lock me-1"></i>Esta solicitud está cerrada.
+                        </p>
+                    <?php endif; ?>
+                    
                 </div>
             </div>
             <?php endforeach; ?>
@@ -284,7 +296,7 @@ $seccion = $_GET['seccion'] ?? 'solicitudes';
 
         <h4 class="fw-bold mb-4">Mis envíos</h4>
 
-        <?php if (empty($envios)): ?>
+        <?php if (empty($envios)): ?>       
             <div class="alert alert-info">
                 Aún no tienes envíos activos. Cuando una solicitud sea aceptada
                 aparecerá aquí con toda la información.

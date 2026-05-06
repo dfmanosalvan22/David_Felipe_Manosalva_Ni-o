@@ -469,7 +469,7 @@ try {
         <div class="row align-items-center">
             <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
                 <span class="fw-bold">
-                    <i class="bi bi-truck-front-fill text-danger me-1"></i>LogiTrans S.A.
+                    <img src="Imagenes/logo_sinfond.png" alt="LogiTrans S.A." height="35" class="d-inline-block align-text-top me-1"></img>LogiTrans S.A.
                 </span>
                 <span class="text-white-50 ms-2 small">Mérida, Extremadura</span>
             </div>
