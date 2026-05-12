@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // sea uno de los autorizados: 9=Jefe Logistica, 10=Mozo Almacen,
     // 11=Transportista, 20=Jefe Conductores
     $stmt = $pdo->prepare(
-        "SELECT ID_EMPLEADO, NOMBRE_EMP, APELLIDOS_EMP, PASSWORD_HASH, ID_PUESTO
+        "SELECT ID_EMPLEADO, NOMBRE_EMP, APELLIDOS_EMP, PASSWORD_HASH, ID_PUESTO, EMAIL_EMP
          FROM EMPLEADOS
          WHERE EMAIL_EMP = ?
          AND ID_PUESTO IN (9, 10, 11, 20)"
@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['empleado']    = $empleado['NOMBRE_EMP'] . ' ' . $empleado['APELLIDOS_EMP'];
         $_SESSION['id_empleado'] = $empleado['ID_EMPLEADO'];
         $_SESSION['id_puesto']   = $empleado['ID_PUESTO'];
+	$_SESSION['email_empleado'] = $empleado['EMAIL_EMP'];
 
         header("Location: index.php");
         exit();

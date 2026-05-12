@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($cliente && password_verify($password, $cliente['PASSWORD_HASH'])) {
         $_SESSION['usuario']    = $cliente['NOMBRE_CLI'];
         $_SESSION['id_cliente'] = $cliente['ID_CLIENTE'];
+	$_SESSION['email_cliente'] = $cliente['EMAIL_CLI'];
         header("Location: dashboard.php");
         exit();
     } else {
