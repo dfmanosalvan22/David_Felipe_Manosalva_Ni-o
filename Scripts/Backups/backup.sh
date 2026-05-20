@@ -6,42 +6,46 @@ if [[ $# -ne 1 ]]; then
 fi
 
 TIPO=$1
+
 CONTENEDOR="logitrans-bd"
-VOLUMEN="datos_bd"
-BACKUP_DIR="/home/ubuntu_server_docker/backups"
+BACKUP_DIR="/home/backup_servicio/backups_temp"
+
 FECHA=$(date +%Y%m%d_%H%M%S)
 
-LOGS="$BACKUP_DIR/backup_logs.log"
+mkdir -p "$BACKUP_DIR"
 
-log_backup(){
-        echo "$FECHA - $1" >> "$LOGS"
-}
+if [[ "$TIPO" = "sql" ]]; then
 
-mkdir -p $BACKUP_DIR
+    ARCHIVO="$BACKUP_DIR/dump_$FECHA.sql"
 
-if [[ "$TIPO" = "volumen" ]]; then
-    docker exec $CONTENEDOR tar czf /backups/backup_volumen_$FECHA.tar.gz -C /var/lib/mysql .
+    docker exec "$CONTENEDOR" \
+    mariadb-dump -u root -p'roottoor*' logitrans_db > "$ARCHIVO"
 
-        if [ $? -eq 0 ]; then
-                echo "EXITO:$BACKUP_DIR/backup_volumen_$FECHA.tar.gz"
-                log_backup "EXITO: Backup de volumen realizado correctamente."
-        else
-                echo "ERROR: Consulta el log en $LOGS"
-                log_backup "ERROR: El backup de volumen fallo."
-        fi
-
-elif [[ "$TIPO" = "sql" ]]; then
-        docker exec $CONTENEDOR mariadb-dump -u root -p'roottoor*' logitrans_db > $BACKUP_DIR/dump_$FECHA.sql
-
-        if [ $? -eq 0 ]; then
-                echo "EXITO:$BACKUP_DIR/dump_$FECHA.sql"
-                log_backup "EXITO: Backup SQL realizado correctamente."
-        else
-                echo "ERROR: Consulta el log en $LOGS"
-                log_backup "ERROR: El backup SQL fallo."
-        fi
-else
-        echo "ERROR: Tipo invalido, usa 'volumen' o 'sql'"
-        log_backup "ERROR: Intento de ejecucion con parámetro invalido: $TIPO"
+    if [[ $? -eq 0 ]]; then
+        echo "EXITO:$ARCHIVO"
+    else
+        echo "ERROR: Fallo backup SQL"
         exit 1
+    fi
+
+elif [[ "$TIPO" = "volumen" ]]; then
+
+    ARCHIVO="$BACKUP_DIR/volumen_$FECHA.tar.gz"
+
+    docker run --rm \
+        --volumes-from "$CONTENEDOR" \
+        -v "$BACKUP_DIR":/backup \
+        ubuntu \
+        tar czf "/backup/volumen_$FECHA.tar.gz" /var/lib/mysql
+
+    if [[ $? -eq 0 ]]; then
+        echo "EXITO:$ARCHIVO"
+    else
+        echo "ERROR: Fallo backup volumen"
+        exit 1
+    fi
+
+else
+    echo "ERROR: Tipo inválido"
+    exit 1
 fi
