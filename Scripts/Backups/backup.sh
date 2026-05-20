@@ -49,3 +49,5 @@ else
     echo "ERROR: Tipo inválido"
     exit 1
 fi
+
+find "$BACKUP_DIR" -mtime +7 -delete
