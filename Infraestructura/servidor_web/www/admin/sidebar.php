@@ -69,20 +69,6 @@ $filtro_actual = $_GET['filtro'] ?? '';
 
     <hr class="sidebar-divider">
 
-    <!-- COMUNICACION -->
-    <p class="sidebar-titulo">Comunicacion</p>
-
-    <a href="mensajes.php" class="sidebar-link <?php echo $pagina_actual === 'mensajes.php' ? 'activo' : ''; ?>">
-        <i class="bi bi-chat-dots"></i> Mensajes de clientes
-    </a>
-
-    <hr class="sidebar-divider">
-
-    <!-- CERRAR SESION -->
-    <a href="logout.php" class="sidebar-link text-danger mt-auto">
-        <i class="bi bi-box-arrow-left"></i> Cerrar sesion
-    </a>
-
 </div>
 
 <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
