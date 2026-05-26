@@ -439,7 +439,7 @@ try {
                 <div class="contacto-item">
                     <i class="bi bi-telephone-fill"></i>
                     <h6 class="fw-bold mt-2">Teléfono</h6>
-                    <p class="text-white-50 small">+34 642 831 094</p>
+                    <p class="text-white-50 small">+34 600 000 000</p>
                 </div>
             </div>
 
@@ -474,7 +474,7 @@ try {
                 <span class="text-white-50 ms-2 small">Mérida, Extremadura</span>
             </div>
             <div class="col-md-6 text-center text-md-end">
-                <small class="text-white-50">© 2025 LogiTrans S.A. — Todos los derechos reservados</small>
+                <small class="text-white-50">© 2026 LogiTrans S.A. — Todos los derechos reservados</small>
             </div>
         </div>
     </div>
