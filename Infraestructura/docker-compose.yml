@@ -8,10 +8,10 @@ services:
       context: ./base_datos
       dockerfile: Dockerfile
     environment:
-      MYSQL_ROOT_PASSWORD: roottoor*
-      MYSQL_DATABASE: logitrans_db
-      MYSQL_USER: logitrans_user
-      MYSQL_PASSWORD: LogiTrans25*
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - datos_bd:/var/lib/mysql
     networks:
