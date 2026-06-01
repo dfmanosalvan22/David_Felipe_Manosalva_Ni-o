@@ -127,7 +127,7 @@ docker logs logitrans-php
 docker logs logitrans-bd
 
 # Entrar a la base de datos
-docker exec -it logitrans-bd mariadb -u logitrans_user -pLogiTrans25*
+docker exec -it logitrans-bd mariadb -u [USUARIO_BD] -p[PASSWORD_USUARIO]
 
 # Reconstruir tras cambios
 docker compose up -d --build
